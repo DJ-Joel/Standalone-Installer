@@ -1,0 +1,182 @@
+@import url(http://fonts.googleapis.com/css?family=Scada);
+@import url(http://fonts.googleapis.com/css?family=Audiowide);
+
+body
+{
+	text-align: center;
+	font-family: 'Scada', sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	background-color: white;
+	color: black;
+	padding-top: 60px;
+}
+input[type=text], input[type=email] {
+    	border: 2px solid black;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-right: 5px;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+p.info
+{
+	font-size: 1.0em;
+}
+div.navbar
+{
+#        height: 50px;
+	width: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+	padding-left: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px
+        width: 100%;
+        background-color: white;
+        color: black;
+        text-align: left;
+	border-style: solid;
+	border-width: 0px 0px 2px 0px;
+}
+a.navbar
+{
+	color: white;
+	text-decoration: none;
+}
+div.spacer
+{
+	position: relative;
+	width: 90%;
+	top: 0;
+	height: 50px;
+}
+table
+{
+	margin: auto;
+	min-width: 60%;
+	border: 1px;
+}
+td.result
+{
+	color: black;
+	font-size: 1.6em;
+	font-weight: bold;
+	text-align: left;
+	padding: 20px;
+	border-spacing: 10px;
+	border-style: solid;
+	border-size: 2px;
+}
+
+input[type=button], input[type=submit], input[type=reset], a.button {
+    background-color: white;
+    border: 2px;
+    border-style: solid;
+    border-color: black;
+    font-weight: bold;
+    color: black;
+    padding: 8px 20px;
+    margin-top: 12px;
+    text-decoration: none;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.backbtn {
+	position: fixed;
+	top: 75px;
+	left: 5px;
+}
+.title {
+	font-size: 2em;
+	font-family: Audiowide, cursive;
+	float: right;
+	margin-right: 10px;
+	text-shadow: 4px 4px 4px #aaa;
+}
+span.acctwrap {
+	display: block;
+	text-align: right;
+	padding-right: 10px;
+	padding-top: 4px;
+}
+span.accountbar {
+	font-size: 0.65em;
+	font-weight: normal;
+}
+span.accountbar a.navbar {
+	color: black;
+	text-decoration: underline;
+}
+td.favcol {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 1.8em;
+	width: 40px;
+}
+a.favstar {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+td.favaction {
+	text-align: center;
+	vertical-align: middle;
+}
+p.error {
+	color: #b00020;
+	font-size: 1.0em;
+}
+input[type=password] {
+	border: 2px solid black;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-right: 5px;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+tr.currentsinger td.result {
+	background-color: #fff3b0;
+	border-left: 8px solid #2e7d32;
+}
+span.songinfo {
+	color: #555555;
+	font-size: 0.85em;
+	font-weight: normal;
+}
+#chatThread {
+	max-height: 55vh;
+	overflow-y: auto;
+	margin-bottom: 10px;
+}
+div.chatmsg {
+	border: 2px solid black;
+	padding: 8px;
+	margin: 6px 0;
+	font-size: 1.1em;
+	background-color: white;
+	color: black;
+	text-align: left;
+}
+div.chatmsg.chatkj {
+	background-color: #fff3b0;
+	border-left: 8px solid #2e7d32;
+}
+span.chatwho {
+	font-weight: bold;
+	font-size: 0.85em;
+	color: #555555;
+}
+textarea[name=message] {
+	width: 90%;
+	border: 2px solid black;
+	font-size: 1.2em;
+	padding: 5px;
+}
+span.streamtag {
+	color: #555555;
+	font-size: 0.85em;
+	font-style: italic;
+}
