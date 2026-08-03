@@ -31,7 +31,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$Url,
 
-    [string]$OutputPath = (Join-Path $env:ProgramData 'StandaloneInstaller\venue-qr-code.png')
+    [string]$OutputPath = (Join-Path $env:ProgramData 'Standalone Installer\venue-qr-code.png')
 )
 
 $ErrorActionPreference = 'Stop'
