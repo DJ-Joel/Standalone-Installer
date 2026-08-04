@@ -13,7 +13,7 @@ What this package includes:
 
 
 What you must have:
-+  A Windows PC
++  A Windows PC running windows 10 or greater
 +  OpenKJ 2.50+
 
 
