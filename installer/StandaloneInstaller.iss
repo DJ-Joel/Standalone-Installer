@@ -119,7 +119,8 @@ begin
       Result := False;
       exit;
     end;
-    if not TryStrToInt(ConfigPage.Values[1], PortNum) or (PortNum < 1024) or (PortNum > 65535) then
+    PortNum := StrToIntDef(ConfigPage.Values[1], -1);
+    if (PortNum < 1024) or (PortNum > 65535) then
     begin
       MsgBox('Enter a port number between 1024 and 65535.', mbError, MB_OK);
       Result := False;
@@ -141,8 +142,7 @@ var
   FullCmd: String;
 begin
   TempFile := ExpandConstant('{tmp}\ps_output.txt');
-  FullCmd := Format('-NoProfile -ExecutionPolicy Bypass -File "%s" %s',
-    [ScriptPath, Arguments]);
+  FullCmd := Format('-NoProfile -ExecutionPolicy Bypass -File "%s" %s', [ScriptPath, Arguments]);
 
   Result := Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'),
     FullCmd + Format(' > "%s" 2>&1', [TempFile]),
@@ -242,8 +242,8 @@ begin
   begin
     MsgBox('Could not update OpenKJ''s settings automatically - this usually ' +
       'means OpenKJ is currently running. Close OpenKJ and re-run this ' +
-      'setup, or set the Request Server URL manually in OpenKJ''s Settings: ' +
-      #13#10#13#10 + Url, mbInformation, MB_OK);
+      'setup, or set the Request Server URL manually in OpenKJ''s Settings:' + #13#10#13#10 +
+      Url, mbInformation, MB_OK);
   end;
 end;
 
@@ -290,8 +290,7 @@ begin
     if DetectedLanIP <> '' then
       MsgBox('Setup is complete.' + #13#10#13#10 +
         'Singers can request songs at:' + #13#10 +
-        'http://' + DetectedLanIP + ':' + ChosenPort + '/index.php' +
-        #13#10#13#10 +
+        'http://' + DetectedLanIP + ':' + ChosenPort + '/index.php' + #13#10#13#10 +
         'A QR code for this address was saved to:' + #13#10 + QrOutputPath,
         mbInformation, MB_OK)
     else
