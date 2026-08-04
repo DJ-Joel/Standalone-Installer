@@ -46,13 +46,13 @@
     tested against.
 
 .NOTES
-    THE PINNED HASHES BELOW ARE PLACEHOLDERS for PHP and WinSW. This script's
-    verification logic is real and complete, but the actual SHA256 values
-    need to be filled in after a real, manually-verified first download of
-    each file - they were never computed by an automated process with the
-    ability to reach these download hosts, and shipping a fabricated hash
-    would be worse than no hash at all. See the "REQUIRES SETUP" markers
-    below.
+    PHP and WinSW's hashes are both real, verified values now - WinSW's was
+    computed directly against the actual downloaded binary; PHP's was
+    computed and confirmed by hand (windows.php.net isn't reachable from
+    every environment that helped build this script). If a future version
+    bump ever leaves a Sha256 value looking like "REQUIRES SETUP", that's a
+    genuine placeholder needing the same treatment - never fill one in with
+    a fabricated value.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -77,10 +77,10 @@ foreach ($dir in @($depsDir, $phpDir, $toolsDir)) {
 # ---------------------------------------------------------------------------
 $dependencies = @(
     @{
-        Name = 'PHP 8.5.8 NTS x64'
-        Url = 'https://windows.php.net/downloads/releases/php-8.5.8-nts-Win32-vs17-x64.zip'
-        Sha256 = 'REQUIRES SETUP - fill in after one manually verified download'
-        Destination = Join-Path $depsDir 'php-8.5.8-nts-Win32-vs17-x64.zip'
+        Name = 'PHP 8.5.9 NTS x64'
+        Url = 'https://windows.php.net/downloads/releases/php-8.5.9-nts-Win32-vs17-x64.zip'
+        Sha256 = '516C2D72231BD035C8A910120834ADD0AD208098B790B4909B2CBEB93CE135FC'
+        Destination = Join-Path $depsDir 'php-8.5.9-nts-Win32-vs17-x64.zip'
         ExtractTo = $phpDir
         PostExtractNote = 'Confirm php.ini has extension=pdo_sqlite enabled - the NTS zip ships php.ini-production/php.ini-development, neither active by default. This installer needs one renamed to php.ini with that extension uncommented.'
     },
