@@ -130,8 +130,9 @@ function navbar($backurl)
 	if ($backurl == "")
 		$backurl = "index.php";
 	global $screensize;
+	global $venueName;
 	echo "<div class=navbar>
-	<span class=title>OpenKJ Songbook</span>
+	<span class=title>$venueName Songbook</span>
 	</div><div class=mainbody><span class=backbtn><a class=button href=\"$backurl\" class=navbar id=backlink>Back</a> <a class=button href=\"rotation.php\" class=navbar id=rotationlink>Who's Up Next</a></span><span class=acctwrap>";
 	accountLinks();
 	echo "</span>";
