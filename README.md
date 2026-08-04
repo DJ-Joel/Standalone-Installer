@@ -1,4 +1,4 @@
-This is an add-on package to OpenKJ 2.50 and great from the DJ-Joel repository.  This will not work with legacy OpenKJ.
+This is an add-on package to OpenKJ 2.50 or greater from the DJ-Joel repository.  This will not work with legacy OpenKJ.
 
 What this package includes:
 
