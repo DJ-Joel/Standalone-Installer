@@ -4,17 +4,20 @@ Scripts that run **before** compiling the Inno Setup installer, to fetch
 third-party binaries the installer needs but that shouldn't be committed to
 this repo (large, and git never truly forgets a binary once committed).
 
-Not yet written - `fetch-dependencies.ps1` needs to land here, downloading
-pinned, known-good versions of:
-  - A portable PHP build (with pdo_sqlite enabled)
-  - NSSM (the service wrapper)
-  - qrencode.exe (LGPL 2.1, https://fukuchi.org/works/qrencode/) - decided,
-    see scripts/generate-qr.ps1. Still needs a specific trustworthy build
-    pinned here (ideally built from a pinned source commit ourselves, or
-    sourced from vcpkg's build pipeline, rather than trusting an arbitrary
-    prebuilt binary found online) with a checksum this script verifies
-    before use.
+`fetch-dependencies.ps1` handles all three:
+  - PHP (portable, NTS x64, with pdo_sqlite) - downloaded, hash-verified
+  - WinSW (service wrapper) - downloaded, hash-verified
+  - qrencode.exe - **built from source via vcpkg**, not downloaded. No
+    trustworthy prebuilt Windows binary exists anywhere for this one - see
+    the script's own header comment for the full reasoning. This step needs
+    Visual Studio Build Tools (MSVC) installed on whoever runs the script -
+    a real prerequisite the other two don't have.
 
-Everything this script downloads should be gitignored. Each bundled
-dependency's own license file needs to travel with the installed app - see
-tools\ once fetch-dependencies.ps1 exists.
+Still outstanding: the PHP and WinSW entries have real, verified download
+URLs, but their pinned SHA256 hashes are still placeholders - they need to be
+filled in after one manually-verified download of each (see the
+"REQUIRES SETUP" markers in the script).
+
+Everything this script produces should be gitignored. Each bundled
+dependency's own license file travels with it into deps\tools\ - qrencode's
+is copied automatically from vcpkg's own package metadata during the build.

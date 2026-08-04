@@ -1,17 +1,18 @@
 <#
 .SYNOPSIS
-    Downloads and verifies the pinned third-party binaries this installer
-    bundles, before compiling. None of these are committed to git - large
-    binaries bloat a repo permanently, even after later removal.
+    Fetches the pinned third-party binaries this installer bundles, before
+    compiling. None of these are committed to git - large binaries bloat a
+    repo permanently, even after later removal.
 
 .DESCRIPTION
-    Three dependencies, each with a genuine reason for its exact form here:
+    Three dependencies, handled two different ways:
 
       PHP (NTS, x64)  - windows.php.net's own docs: "NTS builds are for
                          single-threaded use cases, typically PHP running via
                          FastCGI or on the CLI" - exactly our case, since we
                          run PHP via its own built-in server (php -S), not
-                         through a threaded web server module.
+                         through a threaded web server module. Downloaded and
+                         verified against a pinned SHA256 hash.
 
       WinSW 2.x        - wraps the PHP process as a real Windows service, so
                          it survives reboots without anyone staying logged
@@ -20,26 +21,38 @@
                          from 2014, with a known startup bug on modern
                          Windows that isn't fixed until a 2017 pre-release
                          build - not what a 2026 commercial product should
-                         depend on.)
+                         depend on.) Also downloaded and hash-verified.
 
-      qrencode.exe     - LGPL 2.1. Generates the venue's QR code fully
-                         offline. Invoked as a separate process, not linked
-                         into anything we compile, so LGPL's obligations
-                         don't reach our own code - only its own license text
-                         needs to travel with the binary (handled below).
+      qrencode.exe     - LGPL 2.1, generates the venue's QR code fully
+                         offline. Unlike the two above, this is BUILT FROM
+                         SOURCE via vcpkg rather than downloaded - no
+                         trustworthy prebuilt Windows binary exists anywhere;
+                         the author's own site (fukuchi.org) only publishes
+                         source tarballs. vcpkg's port is actively maintained
+                         by Microsoft and community contributors and pulls
+                         from the same official source. This step requires a
+                         C/C++ build toolchain (Visual Studio Build Tools,
+                         MSVC) on whoever runs this script - a real
+                         prerequisite the other two don't have. Invoked as a
+                         separate process, not linked into anything we
+                         compile, so LGPL's obligations don't reach our own
+                         code - only its own license text needs to travel
+                         with the binary (handled automatically below, copied
+                         from vcpkg's own package metadata).
 
-    Every download is verified against a pinned SHA256 hash before use. If a
-    hash doesn't match, the script stops rather than proceed with a file that
-    might be corrupted, tampered with, or simply not the build that was
+    The two downloads are verified against a pinned SHA256 hash before use.
+    If a hash doesn't match, the script stops rather than proceed with a file
+    that might be corrupted, tampered with, or simply not the build that was
     tested against.
 
 .NOTES
-    THE PINNED HASHES BELOW ARE PLACEHOLDERS. This script's verification
-    logic is real and complete, but the actual SHA256 values need to be
-    filled in after a real, manually-verified first download of each file -
-    they were never computed by an automated process with the ability to
-    reach these download hosts, and shipping a fabricated hash would be
-    worse than no hash at all. See the "REQUIRES SETUP" markers below.
+    THE PINNED HASHES BELOW ARE PLACEHOLDERS for PHP and WinSW. This script's
+    verification logic is real and complete, but the actual SHA256 values
+    need to be filled in after a real, manually-verified first download of
+    each file - they were never computed by an automated process with the
+    ability to reach these download hosts, and shipping a fabricated hash
+    would be worse than no hash at all. See the "REQUIRES SETUP" markers
+    below.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -73,19 +86,11 @@ $dependencies = @(
     },
     @{
         Name = 'WinSW 2.x (stable, .NET Framework build)'
-        Url = 'https://github.com/winsw/winsw/releases/latest/download/WinSW.NET4.exe'
-        Sha256 = 'REQUIRES SETUP - fill in after one manually verified download'
+        Url = 'https://github.com/winsw/winsw/releases/download/v2.12.0/WinSW.NET4.exe'
+        Sha256 = '923111C7142B3DC783A3C722B19B8A21BCB78222D7A136AC33F0CA8A29F4CB66'
         Destination = Join-Path $toolsDir 'WinSW.exe'
         ExtractTo = $null
         PostExtractNote = $null
-    },
-    @{
-        Name = 'qrencode.exe (LGPL 2.1)'
-        Url = 'REQUIRES SETUP - pin a specific trustworthy build. Building from a pinned upstream source commit ourselves (https://github.com/fukuchi/libqrencode) or sourcing via vcpkg''s own build pipeline are both safer than trusting an arbitrary prebuilt binary found online.'
-        Sha256 = 'REQUIRES SETUP'
-        Destination = Join-Path $toolsDir 'qrencode.exe'
-        ExtractTo = $null
-        PostExtractNote = 'Also copy qrencode''s own LICENSE/COPYING file into deps/tools/ - it must travel with the binary in the final install.'
     }
 )
 
@@ -137,7 +142,65 @@ foreach ($dep in $dependencies) {
     }
 }
 
-if ($anyPlaceholders) {
+# ---------------------------------------------------------------------------
+# qrencode.exe - handled separately from the download-and-verify pattern
+# above, because no trustworthy prebuilt Windows binary exists anywhere.
+# fukuchi.org (the author's own site) only publishes source tarballs; there
+# is no official .exe to download and hash. The only defensible option is
+# building it ourselves, from the same official source, via vcpkg's actively
+# maintained port (its README describes it as "kept up to date by Microsoft
+# team members and community contributors").
+#
+# This needs a C/C++ build toolchain (Visual Studio Build Tools, MSVC) on
+# whoever runs this script - a real prerequisite beyond what PHP/WinSW need,
+# since this is a build step, not a download.
+# ---------------------------------------------------------------------------
+function Build-QrEncode {
+    $vcpkgDir = Join-Path $depsDir 'vcpkg'
+    $vcpkgExe = Join-Path $vcpkgDir 'vcpkg.exe'
+    $builtExe = Join-Path $vcpkgDir 'installed\x64-windows\tools\libqrencode\qrencode.exe'
+    $builtLicense = Join-Path $vcpkgDir 'installed\x64-windows\share\libqrencode\copyright'
+
     Write-Host ""
-    Write-Warning "One or more dependencies above are still placeholders. The Inno Setup build will not have everything it needs until these are filled in with real, verified sources."
+    Write-Host "=== qrencode.exe (built from source via vcpkg) ===" -ForegroundColor Cyan
+
+    if ((Test-Path (Join-Path $toolsDir 'qrencode.exe')) -and (Test-Path (Join-Path $toolsDir 'qrencode-LICENSE.txt'))) {
+        Write-Host "Already built: $(Join-Path $toolsDir 'qrencode.exe')"
+        return
+    }
+
+    if (-not (Test-Path $vcpkgExe)) {
+        Write-Host "Bootstrapping vcpkg into $vcpkgDir ..."
+        if (-not (Test-Path $vcpkgDir)) {
+            git clone --quiet https://github.com/microsoft/vcpkg.git $vcpkgDir
+        }
+        & (Join-Path $vcpkgDir 'bootstrap-vcpkg.bat') -disableMetrics
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "vcpkg bootstrap failed. This requires Visual Studio Build Tools (MSVC) to be installed - see https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio"
+            exit 1
+        }
+    }
+
+    Write-Host "Building libqrencode[tool] for x64-windows - this compiles from source and can take several minutes ..."
+    & $vcpkgExe install "libqrencode[tool]:x64-windows"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "vcpkg build of libqrencode failed. Check the output above - the most common cause is a missing or incomplete MSVC installation."
+        exit 1
+    }
+
+    if (-not (Test-Path $builtExe)) {
+        Write-Error "Build reported success but qrencode.exe wasn't found at the expected path: $builtExe"
+        exit 1
+    }
+
+    Copy-Item $builtExe (Join-Path $toolsDir 'qrencode.exe') -Force
+    if (Test-Path $builtLicense) {
+        Copy-Item $builtLicense (Join-Path $toolsDir 'qrencode-LICENSE.txt') -Force
+    } else {
+        Write-Warning "Could not find qrencode's license file at the expected vcpkg path - it must be sourced and placed at $toolsDir\qrencode-LICENSE.txt manually before this can ship. LGPL 2.1 requires it to travel with the binary."
+    }
+
+    Write-Host "Built and copied: $(Join-Path $toolsDir 'qrencode.exe')"
 }
+
+Build-QrEncode
