@@ -13,8 +13,8 @@ What this package includes:
 
 
 What you must have:
-A Windows PC
-OpenKJ 2.50+
++  A Windows PC
++  OpenKJ 2.50+
 
 
 Download this installer from the releases section
